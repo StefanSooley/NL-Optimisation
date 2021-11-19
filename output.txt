@@ -1,0 +1,57 @@
+====== ====== Overview ====== ======
+
+Number of iterations: 5
+Solution: [1. 2. 3.]
+Time taken: 1.001 ms
+
+======= ====== Steps ====== =======
+
+To calculate each successive x vector iteratively, the formula: x_new = x + alpha * d is used.
+This will continue until the norm of d is less than a tolerance.
+Each d is calculated using: d_new = beta * d - g,
+where beta is calculated using the Polak-Ribiere formula.
+Alpha is approximated using a line search algorithm to minimise the function f(x + alpha*d). 
+
+
+1)
+In the first step, the seed vector x0 was [0.5 0.5 0.5], and d was simply the negative of the gradient
+resulting in d = [1. 3. 5.]. The new x vector is given by the equation x = x + alpha * d, 
+
+The resulting x vector is [0.62857242 1.88571726 3.1428621 ].
+
+
+2)
+The calculated beta value is: 0.019593820419638006,
+making d [ 0.76244898  0.28734694 -0.1877551 ].
+The alpha value found using line search minimisation is: 0.6285724204119332
+
+Using these values, the resulting x vector is [1.00247014 2.02662946 3.05078879]
+
+Since the calculated norm of d is higher than the tolerance, another iteration is required.
+
+3)
+The calculated beta value is: -1.7199916617462479e-06,
+making d [-0.0049416  -0.05325942 -0.10157725].
+The alpha value found using line search minimisation is: 0.49039048106633015
+
+Using these values, the resulting x vector is [0.99999935 1.99999979 3.00000023]
+
+Since the calculated norm of d is higher than the tolerance, another iteration is required.
+
+4)
+The calculated beta value is: -1.4071664215144284e-06,
+making d [ 1.31140588e-06  4.94234233e-07 -3.22937411e-07].
+The alpha value found using line search minimisation is: 0.4999992964158013
+
+Using these values, the resulting x vector is [1.         2.00000004 3.00000007]
+
+Since the calculated norm of d is higher than the tolerance, another iteration is required.
+
+5)
+The calculated beta value is: 1.372153548980554e-06,
+making d [-6.95369406e-09 -7.49448898e-08 -1.42936086e-07].
+The alpha value found using line search minimisation is: 0.5000007035841987
+
+Using these values, the resulting x vector is [1. 2. 3.]
+
+Since the calculated norm of d is now below the tolerance, this x is the solution to the desired accuracy.
