@@ -1,6 +1,6 @@
 import numpy as np
 import time
-from function import Hessian, b, f, f_
+
 
 golden_ratio = (np.sqrt(5) + 1) / 2
 
@@ -9,7 +9,7 @@ def line_search(function, start, end):
     # Implementation of the Golden section search algorithm.
     A = end - (end - start) / golden_ratio
     B = start + (end - start) / golden_ratio
-    while abs(B - A) > 10 ** -6:
+    while np.abs(B - A) > 10 ** -6:
         if function(A) < function(B):
             end = B
         else:
@@ -20,12 +20,12 @@ def line_search(function, start, end):
     return (B + A) / 2
 
 
-def conjugate_gradient(x0, tol, return_logs=True):
+def conjugate_gradient(x0, tol, f, H, b, return_logs=True):
     # Start timing the algorithm
-    t1 = time.time()
+    t1 = time.perf_counter()
 
     # Calculate the initial g, and the first d is -g
-    g = Hessian @ x0 + b
+    g = H @ x0 + b
     d = -g
 
     # Initialise the x vector
@@ -53,7 +53,7 @@ def conjugate_gradient(x0, tol, return_logs=True):
             d = -g + beta * d
 
         # alpha calculated using a 1D line search algorithm (Golden section search)
-        alpha = line_search(lambda y: f(x + y * d), 0, 1)
+        alpha = line_search(lambda y: f(*x + y * d), 0, 1)
 
         # calculate new x
         x = x + alpha * d
@@ -62,7 +62,7 @@ def conjugate_gradient(x0, tol, return_logs=True):
         g_old = g.copy()
 
         # Calculate new g
-        g = Hessian @ x + b
+        g = H @ x + b
 
         # Save values to logs
         alphas = np.append(alphas, alpha)
@@ -74,8 +74,7 @@ def conjugate_gradient(x0, tol, return_logs=True):
         j += 1
 
     # Take the time after the loop (difference between t2 and t1 is the total time taken)
-    t2 = time.time()
-
+    t2 = time.perf_counter()
     logs = np.array([j, xs, ds, gs, alphas, betas, t2 - t1], dtype='object')
 
     return x, logs

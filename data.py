@@ -4,9 +4,10 @@ import sympy
 
 def read_func(input_filename):
     """
+    :param input_filename: The filename containing the input function
 
     Reads the input file and parses to produce a function.
-    :return: the
+    :return: The function as a python function, the Hessian, and the b terms.
     """
     with open(input_filename) as f:
         lines = f.readlines()
@@ -18,16 +19,27 @@ def read_func(input_filename):
     func = sympy.sympify(function)
 
     # Make a string of the list of variables, remove commas and brackets
-    syms_str = str(func.free_symbols).replace(',', '')[1:-1]
+    syms_str = str(sorted(func.free_symbols, key=lambda s: s.name)).replace(",",'')[1:-1]
 
     # Convert the string of variables into sympy variables
     symbols = sympy.symbols(syms_str)
 
     # Calculate the Hessian using the sympy function object and symbols
-    H = sympy.hessian(func, symbols)
+    try:
+        H = np.array(sympy.hessian(func, symbols), dtype=np.float64)
+    except:
+        exit("The input function must be a quadratic.")
 
-    print(H)
-    return None
+    # Convert the expression into a python function
+    f = sympy.lambdify(symbols, func)
+
+    # Turn the equation into a polynomial in terms of each coefficient
+    poly_list = [sympy.poly(func, symbol) for symbol in symbols]
+
+    # Gather only the linear terms
+    b = np.array([poly.coeffs()[1] for poly in poly_list], dtype=np.float64)
+
+    return f, H, b
 
 def save_logs(logs, filename='outs.txt'):
     """
