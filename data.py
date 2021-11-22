@@ -7,7 +7,7 @@ def read_func(input_filename):
     :param input_filename: The filename containing the input function
 
     Reads the input file and parses to produce a function.
-    :return: The function as a python function, the Hessian, and the b terms.
+    :return: The function as a python function, and it's derivative.
     """
     with open(input_filename) as f:
         lines = f.readlines()
@@ -25,10 +25,14 @@ def read_func(input_filename):
     symbols = sympy.symbols(syms_str)
 
     # Calculate the Hessian using the sympy function object and symbols
-    try:
-        H = np.array(sympy.hessian(func, symbols), dtype=np.float64)
-    except:
-        exit("The input function must be a quadratic.")
+    # try:
+    #     H = np.array(sympy.hessian(func, symbols), dtype=np.float64)
+    # except:
+    #     exit("The input function must be a quadratic.")
+
+
+    # Calculate grad, and turn it into a python function
+    f_ = sympy.lambdify(symbols, np.array([func.diff(x) for x in symbols]))
 
     # Convert the expression into a python function
     f = sympy.lambdify(symbols, func)
@@ -39,7 +43,7 @@ def read_func(input_filename):
     # Gather only the linear terms
     b = np.array([poly.coeffs()[1] for poly in poly_list], dtype=np.float64)
 
-    return f, H, b
+    return f, f_
 
 def save_logs(logs, filename='outs.txt'):
     """
@@ -75,7 +79,8 @@ def save_logs(logs, filename='outs.txt'):
                          f"\nmaking d {ds[i]}." \
                          f"\nThe alpha value found using line search minimisation is: {alphas[i-2]}" \
                          f"\n\nUsing these values, the resulting x vector is {xs[i]}\n" \
-                         f"\nSince the calculated norm of d is higher than the tolerance, another iteration is required." \
+                         f"\nSince the calculated norm of d is higher than the tolerance, another iteration is " \
+                         f"required." \
 
         else:
             steps_msg += f"\n\n{str(i)})\nThe calculated beta value is: {betas[i-2]}," \

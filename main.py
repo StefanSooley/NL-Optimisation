@@ -5,12 +5,12 @@ from data import save_logs, read_func
 
 
 def main():
-    f, H, b = read_func('input.txt')
+    f, f_ = read_func('input.txt')
 
-    tolerance = 10 ** -6
+    tolerance = 10 ** -10
     x0 = np.array([0.5, 0.5, 0.5])
 
-    solution, logs = conjugate_gradient(x0, tolerance, f, H, b)
+    solution, logs = conjugate_gradient(x0, tolerance, f, f_)
     print(f"Solution = {solution}")
     save_logs(logs, filename='output.txt')
 

@@ -20,12 +20,12 @@ def line_search(function, start, end):
     return (B + A) / 2
 
 
-def conjugate_gradient(x0, tol, f, H, b, return_logs=True):
+def conjugate_gradient(x0, tol, f, f_, return_logs=True):
     # Start timing the algorithm
     t1 = time.perf_counter()
 
     # Calculate the initial g, and the first d is -g
-    g = H @ x0 + b
+    g = np.array(f_(*x0))
     d = -g
 
     # Initialise the x vector
@@ -42,7 +42,10 @@ def conjugate_gradient(x0, tol, f, H, b, return_logs=True):
     ds = np.array(d)
     xs = np.array(x0)
 
-    while np.linalg.norm(d) > tol:
+    eps = np.inf
+    while eps > tol:
+        x_prev = x
+
         # In the first iteration, j=0 and d isn't adjusted
         if j == 0:
             d = d
@@ -62,7 +65,7 @@ def conjugate_gradient(x0, tol, f, H, b, return_logs=True):
         g_old = g.copy()
 
         # Calculate new g
-        g = H @ x + b
+        g = np.array(f_(*x))
 
         # Save values to logs
         alphas = np.append(alphas, alpha)
@@ -70,6 +73,8 @@ def conjugate_gradient(x0, tol, f, H, b, return_logs=True):
         ds = np.vstack([ds, d])
         g_olds = np.vstack([g_olds, g_old])
         gs = np.vstack([gs, g])
+
+        eps = np.linalg.norm(x-x_prev)
 
         j += 1
 
