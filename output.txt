@@ -2,7 +2,7 @@
 
 Number of iterations: 6
 Solution: [1. 2. 3.]
-Time taken: 1.339 ms
+Time taken: 1.72 ms
 
 ======= ====== Steps ====== =======
 

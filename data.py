@@ -24,13 +24,6 @@ def read_func(input_filename):
     # Convert the string of variables into sympy variables
     symbols = sympy.symbols(syms_str)
 
-    # Calculate the Hessian using the sympy function object and symbols
-    # try:
-    #     H = np.array(sympy.hessian(func, symbols), dtype=np.float64)
-    # except:
-    #     exit("The input function must be a quadratic.")
-
-
     # Calculate grad, and turn it into a python function
     f_ = sympy.lambdify(symbols, np.array([func.diff(x) for x in symbols]))
 
