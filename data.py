@@ -19,7 +19,7 @@ def read_func(input_filename):
     func = sympy.sympify(function)
 
     # Make a string of the list of variables, remove commas and brackets
-    syms_str = str(sorted(func.free_symbols, key=lambda s: s.name)).replace(",",'')[1:-1]
+    syms_str = str(sorted(func.free_symbols, key=lambda s: s.name)).replace(",", '')[1:-1]
 
     # Convert the string of variables into sympy variables
     symbols = sympy.symbols(syms_str)
@@ -30,13 +30,8 @@ def read_func(input_filename):
     # Convert the expression into a python function
     f = sympy.lambdify(symbols, func)
 
-    # Turn the equation into a polynomial in terms of each coefficient
-    poly_list = [sympy.poly(func, symbol) for symbol in symbols]
-
-    # Gather only the linear terms
-    b = np.array([poly.coeffs()[1] for poly in poly_list], dtype=np.float64)
-
     return f, f_
+
 
 def save_logs(logs, filename='outs.txt'):
     """
@@ -45,7 +40,6 @@ def save_logs(logs, filename='outs.txt'):
     :param filename:
     :return:
     """
-
 
     j, xs, ds, gs, alphas, betas, time = logs
     steps_msg = ""
@@ -68,15 +62,14 @@ def save_logs(logs, filename='outs.txt'):
     for i in range(2, j + 1):
         if i < j:
 
-            steps_msg += f"\n\n{str(i)})\nThe calculated beta value is: {betas[i-2]}," \
+            steps_msg += f"\n\n{str(i)})\nThe calculated beta value is: {betas[i - 2]}," \
                          f"\nmaking d {ds[i]}." \
-                         f"\nThe alpha value found using line search minimisation is: {alphas[i-2]}" \
+                         f"\nThe alpha value found using line search minimisation is: {alphas[i - 2]}" \
                          f"\n\nUsing these values, the resulting x vector is {xs[i]}\n" \
                          f"\nSince the calculated norm of d is higher than the tolerance, another iteration is " \
-                         f"required." \
-
+                         f"required."
         else:
-            steps_msg += f"\n\n{str(i)})\nThe calculated beta value is: {betas[i-2]}," \
+            steps_msg += f"\n\n{str(i)})\nThe calculated beta value is: {betas[i - 2]}," \
                          f"\nmaking d {ds[i]}." \
                          f"\nThe alpha value found using line search minimisation is: {alphas[-1]}" \
                          f"\n\nUsing these values, the resulting x vector is {xs[i]}\n" \

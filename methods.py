@@ -70,7 +70,7 @@ def conjugate_gradient(x0, tol, f, f_, simple_logs=False):
             print(g, g_old)
 
             beta = (g.transpose() @ (g - g_old) / (g_old.transpose() @ g_old))
-            beta = (g.transpose()@g) / (g_old.transpose() @ g_old)
+            beta = (g.transpose() @ g) / (g_old.transpose() @ g_old)
             betas = np.append(betas, beta)
             d = -g + beta * d
 
@@ -79,7 +79,6 @@ def conjugate_gradient(x0, tol, f, f_, simple_logs=False):
 
         # calculate new x
         x = x + alpha * d
-
 
         # Save values to logs
         alphas = np.append(alphas, alpha)
@@ -102,8 +101,10 @@ def conjugate_gradient(x0, tol, f, f_, simple_logs=False):
     return x, logs
 
 
-def steepest_descent(x0, tol, f, f_):
+def steepest_descent(x0, tol, f, f_, y=None, x_data=None):
     # Start timing the algorithm
+
+
     t1 = time.perf_counter()
 
     eps = np.inf
@@ -128,17 +129,35 @@ def steepest_descent(x0, tol, f, f_):
     # Take the time after the loop (difference between t2 and t1 is the total time taken)
     t2 = time.perf_counter()
 
-    logs = np.array([j, t2-t1, xs], dtype='object')
-
+    logs = np.array([j, t2 - t1, xs], dtype='object')
 
     return x, logs
 
+
+def f2(x, y, theta):
+    return (1 / (2 * len(y)) * np.linalg.norm((y - x @ theta) ** 2))
+
+
+def f2_(x, y, theta):
+    deriv = 1 / (len(y)) * np.array((x @ theta - y)) @ x
+    for i, weight in enumerate(theta):
+        pass
+        # deriv[i] = (1/len(theta))*1
+
+    print(deriv)
+
+    return None
+
+
 def min_cost_func(x0, tol, f, f_):
-    #data = pd.read_csv('fires.csv')
+    # data = pd.read_csv('fires.csv')
 
     x = np.array([[1, 25, 2], [1, 12, 42], [1, 11, 31], [1, 15, 35]])
-
     y = np.array([5, 25, 22, 18])
+
     theta = np.array([1, 0, 0.5])
 
-    print(np.linalg.norm((1/4)*(y-x@theta)**2))
+    mse = f2(x, y, theta)
+    f2_(x, y, theta)
+    # steepest_descent(theta, 10*-2, f2, )
+    print(mse)
