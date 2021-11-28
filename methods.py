@@ -101,9 +101,16 @@ def conjugate_gradient(x0, tol, f, f_, simple_logs=False):
     return x, logs
 
 
-def steepest_descent(x0, tol, f, f_, y=None, x_data=None):
+def steepest_descent(x0, tol, f, f_):
+    """
+    Calculates the minimum value of a function using the Steepest descent method.
+    :param x0: Seed vector
+    :param tol: precision of solution
+    :param f: function to minimise
+    :param f_: derivative function of f
+    :return: solution vector, and logs.
+    """
     # Start timing the algorithm
-
 
     t1 = time.perf_counter()
 
@@ -134,30 +141,21 @@ def steepest_descent(x0, tol, f, f_, y=None, x_data=None):
     return x, logs
 
 
-def f2(x, y, theta):
-    return (1 / (2 * len(y)) * np.linalg.norm((y - x @ theta) ** 2))
-
-
-def f2_(x, y, theta):
-    deriv = 1 / (len(y)) * np.array((x @ theta - y)) @ x
-    for i, weight in enumerate(theta):
-        pass
-        # deriv[i] = (1/len(theta))*1
-
-    print(deriv)
-
-    return None
-
-
-def min_cost_func(x0, tol, f, f_):
-    # data = pd.read_csv('fires.csv')
-
+def f2(theta):
     x = np.array([[1, 25, 2], [1, 12, 42], [1, 11, 31], [1, 15, 35]])
     y = np.array([5, 25, 22, 18])
+    return 1 / (2 * len(y)) * np.linalg.norm((y - x @ theta) ** 2)
 
-    theta = np.array([1, 0, 0.5])
 
-    mse = f2(x, y, theta)
-    f2_(x, y, theta)
+def f2_(theta):
+    x = np.array([[1, 25, 2], [1, 12, 42], [1, 11, 31], [1, 15, 35]])
+    y = np.array([5, 25, 22, 18])
+    deriv = 1 / (len(y)) * np.array((x @ theta - y)) @ x
+    return deriv
+
+
+def min_cost_func(theta0, tol, f, f_):
+    # data = pd.read_csv('fires.csv')
+
+    steepest_descent(theta0, tol, f, f_)
     # steepest_descent(theta, 10*-2, f2, )
-    print(mse)

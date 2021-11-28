@@ -38,7 +38,7 @@ def save_logs(logs, filename='outs.txt'):
     Takes the logs from the algorithm and writes an output file with
     :param logs:
     :param filename:
-    :return:
+    :return: None
     """
 
     j, xs, ds, gs, alphas, betas, time = logs
