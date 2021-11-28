@@ -1,23 +1,19 @@
 import numpy as np
 import time
-import pandas as pd
-
-golden_ratio = (np.sqrt(5) + 1) / 2
+from methods import line_search
 
 
-def line_search(function, start, end):
-    # Implementation of the Golden section search algorithm.
-    A = end - (end - start) / golden_ratio
-    B = start + (end - start) / golden_ratio
-    while np.abs(B - A) > 10 ** -6:
-        if function(A) < function(B):
-            end = B
-        else:
-            start = A
-        A = end - (end - start) / golden_ratio
-        B = start + (end - start) / golden_ratio
+def f2(theta):
+    x = np.array([[1, 25, 2], [1, 12, 42], [1, 11, 31], [1, 15, 35]])
+    y = np.array([5, 25, 22, 18])
+    return 1 / (2 * len(y)) * np.linalg.norm((y - x @ theta) ** 2)
 
-    return (B + A) / 2
+
+def f2_(theta):
+    x = np.array([[1, 25, 2], [1, 12, 42], [1, 11, 31], [1, 15, 35]])
+    y = np.array([5, 25, 22, 18])
+    deriv = 1 / (len(y)) * np.array((x @ theta - y)) @ x
+    return deriv
 
 
 def conjugate_gradient(x0, tol, f, f_, simple_logs=False):
@@ -34,11 +30,11 @@ def conjugate_gradient(x0, tol, f, f_, simple_logs=False):
     t1 = time.perf_counter()
 
     # Calculate the initial g, and the first d is -g
-    g = np.array(f_(*x0))
+    g = np.array(f_(x0))
     d = -g
 
     # Initialise the x vector
-    x = np.zeros(len(x0))
+    x = x0
 
     # Steps counter
     j = 0
@@ -65,17 +61,14 @@ def conjugate_gradient(x0, tol, f, f_, simple_logs=False):
         else:
 
             # Calculate new g
-            g = np.array(f_(*x))
-
-            print(g, g_old)
-
+            g = np.array(f_(x))
             beta = (g.transpose() @ (g - g_old) / (g_old.transpose() @ g_old))
-            beta = (g.transpose() @ g) / (g_old.transpose() @ g_old)
+            #beta = (g.transpose() @ g) / (g_old.transpose() @ g_old)
             betas = np.append(betas, beta)
             d = -g + beta * d
 
         # alpha calculated using a 1D line search algorithm (Golden section search)
-        alpha = line_search(lambda y: f(*x + y * d), -1, 1)
+        alpha = line_search(lambda y: f(x + y * d), -1, 1)
 
         # calculate new x
         x = x + alpha * d
@@ -115,16 +108,16 @@ def steepest_descent(x0, tol, f, f_):
     t1 = time.perf_counter()
 
     eps = np.inf
-    x = np.zeros(len(x0))
+    x = x0
     j = 0
     xs = np.array(x0)
 
     while eps > tol:
         if j == 0:
-            g = -np.array(f_(*x0))
+            g = -np.array(f_(x0))
         else:
-            g = -np.array(f_(*x))
-        alpha = line_search(lambda y: f(*x + y * g), -1, 1)
+            g = -np.array(f_(x))
+        alpha = line_search(lambda y: f(x + y * g), -1, 1)
 
         x_prev = x
 
@@ -141,3 +134,11 @@ def steepest_descent(x0, tol, f, f_):
     return x, logs
 
 
+def min_cost_func(theta0, tol, f, f_):
+    # x = np.array([[1, 25, 2], [1, 12, 42], [1, 11, 31], [1, 15, 35]])
+    # y = np.array([5, 25, 22, 18])
+    # print(np.linalg.inv(x.transpose()@x)@x.transpose()@y)
+
+    sol, logs = conjugate_gradient(theta0, tol, f, f_)
+    #sol, logs = steepest_descent(theta0, tol, f, f_)
+    return sol, logs
